@@ -1,36 +1,31 @@
 <?php
+
 const DATABASE_NAME = 'database.db';
+
 class Database
 {
-    private $db = null;
-    private static $instance = null;
+    private ?PDO $db = null;
+    private static ?Database $instance = null;
 
     private function __construct()
     {
         try {
-            $this->db = new PDO('sqlite:' . DATABASE_NAME);
+            $this->db = new PDO('sqlite:../' . DATABASE_NAME);
             $this->db->setAttribute(
                 PDO::ATTR_ERRMODE,
-                PDO::ERRMODE_EXCEPTION,
-                PDO::ATTR_PERSISTENT
+                PDO::ERRMODE_EXCEPTION
             );
         } catch (PDOException $e) {
-            
             die('Connection failed: ' . $e->getMessage());
         }
     }
 
-    public static function getInstance(): Database
+    public static function getConnection(): PDO
     {
         if (self::$instance === null) {
             self::$instance = new Database();
         }
-
-        return self::$instance;
+        return self::$instance->db;
     }
 
-    public function getConnection(): PDO
-    {
-        return $this->db;
-    }
 }
