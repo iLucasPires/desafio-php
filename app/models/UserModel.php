@@ -49,7 +49,7 @@ class UserModel
     {
         try {
             $db = Database::getConnection();
-            $stmt = $db->prepare('INSERT INTO users (email, hashed_password)  VALUES (:email, :hashed_password)');
+            $stmt = $db->prepare('INSERT INTO users (email, hashed_password) VALUES (:email, :hashed_password)');
             $stmt->execute([
                 ':email' => $user->email,
                 ':hashed_password' => $user->password
@@ -79,7 +79,8 @@ class UserModel
                 $userData['created_at']
             );
         } catch (PDOException $e) {
-            throw new Exception('Failed to get user by email: ' . $e->getMessage());
+            echo 'Failed to fetch user: ' . $e->getMessage();
+            return null;
         }
     }
 }

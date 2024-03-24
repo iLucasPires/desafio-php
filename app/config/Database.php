@@ -1,7 +1,5 @@
 <?php
 
-const DATABASE_NAME = 'database.db';
-
 class Database
 {
     private ?PDO $db = null;
@@ -10,7 +8,7 @@ class Database
     private function __construct()
     {
         try {
-            $this->db = new PDO('sqlite:../' . DATABASE_NAME);
+            $this->db = new PDO('sqlite:../database.db');
             $this->db->setAttribute(
                 PDO::ATTR_ERRMODE,
                 PDO::ERRMODE_EXCEPTION
@@ -27,5 +25,4 @@ class Database
         }
         return self::$instance->db;
     }
-
 }

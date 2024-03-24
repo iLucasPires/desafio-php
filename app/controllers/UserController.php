@@ -1,22 +1,65 @@
 <?php
 
-require_once 'utils/Util.php';
 require_once 'models/UserModel.php';
+const BASE_URL = 'https://rickandmortyapi.com/api/character/';
+
+UserModel::createTable();
 
 class UserController
 {
     static public function index()
     {
-        $curl = curl_init("https://rickandmortyapi.com/api/character");
+        $name = isset($_GET['name']) ? $_GET['name'] : '';
+        $species = isset($_GET['species']) ? $_GET['species'] : '';
+        $type = isset($_GET['type']) ? $_GET['type'] : '';
+        $status = isset($_GET['status']) ? $_GET['status'] : '';
+        $gender = isset($_GET['gender']) ? $_GET['gender'] : '';
+        $page = isset($_GET['page']) ? $_GET['page'] : 1;
+
+        $apiUrl =  BASE_URL . '?' . http_build_query([
+            'name' => $name,
+            'species' => $species,
+            'type' => $type,
+            'status' => $status,
+            'gender' => $gender,
+            'page' => $page
+        ]);
+
+        $curl = curl_init($apiUrl);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
 
         $response = curl_exec($curl);
-        if ($response === false) {
-            echo 'Failed to fetch data';
-            return;
-        }
+        if ($response) {
+            $data = json_decode($response, true);
+            $characters = $data['results'];
+            $pages = $data['info']['pages'];
 
-        $characters = json_decode($response, true)['results'];
+            $start = max(1, $page - intval(5 / 2));
+            $end = min($pages, $start + 5 - 1);
+
+            require_once 'views/index.php';
+        } else {
+            $message = 'Failed to fetch data';
+            require_once 'views/index.php';
+        }
+    }
+
+    static public function character()
+    {
+        $id = $_GET['id'] ?? null;
+
+        if ($id) {
+            $curl = curl_init(BASE_URL . $id);
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+
+            $response = curl_exec($curl);
+
+            if ($response) {
+                $character = json_decode($response, true);
+                require_once 'views/character.php';
+            }
+        }
     }
 
     static public function logout()
@@ -38,14 +81,16 @@ class UserController
                 $_SESSION['user'] = $email;
                 header('Location: /');
             } else {
-                echo 'Invalid email or password';
+                $message = 'Invalid email or password';
+                require_once 'views/login.php';
             }
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-
+            require_once 'views/login.php';
         }
     }
+
 
     static public function register()
     {
@@ -65,27 +110,23 @@ class UserController
             }
 
             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-            $user = new UserModel(Database::getConnection());
 
-            if ($user->getUserByEmail($email)) {
-                echo 'User already exists';
+            if (UserModel::getUserByEmail($email)) {
+                echo '';
                 return;
             }
 
             $userCreateDTO = new UserCreateDTO($email, $hashedPassword);
 
-            if ($user->createUser($userCreateDTO)) {
+            if (UserModel::createUser($userCreateDTO)) {
                 $_SESSION['user'] = $email;
                 header('Location: /');
-                return;
-            } else {
-                echo 'Failed to register user';
                 return;
             }
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-  
+            require_once 'views/register.php';
         }
     }
 }
