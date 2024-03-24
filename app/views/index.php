@@ -3,7 +3,7 @@
 <body class="w-full h-screen relative flex flex-col">
     <?php require_once 'partials/header.php' ?>
 
-    <div class="hero flex-1 bg-base-200">
+    <div class="hero flex-1 bg-base-300">
         <div class="hero-content flex-col h-full">
             <?php require_once 'partials/search.php' ?>
 
