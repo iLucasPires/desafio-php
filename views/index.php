@@ -1,4 +1,3 @@
-<?php require_once 'partials/head.php'; ?>
 
 <body class="w-full h-screen relative flex flex-col">
     <?php require_once 'partials/header.php' ?>
@@ -9,7 +8,7 @@
 
             <div class="flex-1 w-full">
                 <div class="grid md:grid-cols-4 gap-4 grid-cols-1">
-                    <?php foreach ($characters as $character) : ?>
+                    <?php foreach ($data['characters'] as $character) : ?>
                         <a class="card rounded bg-base-100 hover:scale-105 transition-transform shadow-lg" href="/character?id=<?php echo $character['id'] ?>">
                             <div class="card-body">
                                 <img src="<?php echo $character['image'] ?>" alt="<?php echo $character['name'] ?>" class="w-full rounded" />
@@ -20,7 +19,7 @@
                 </div>
             </div>
 
-            <div class="join">
+            <!-- <div class="join">
                 <?php if ($page > 1) : ?>
                     <button href="#" class="join-item btn" data-page="<?php echo $page - 1; ?>">Previous</button>
                 <?php endif; ?>
@@ -45,10 +44,8 @@
                             window.location.href = url.toString();
                         });
                     });
-
-
                 });
-            </script>
+            </script> -->
 
         </div>
     </div>

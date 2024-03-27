@@ -1,6 +1,3 @@
-<?php
-require_once 'partials/head.php';
-?>
 
 <body class="w-full h-screen relative">
     <div class="hero min-h-screen bg-base-200">

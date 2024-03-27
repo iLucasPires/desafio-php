@@ -1,7 +1,3 @@
-<?php
-require_once 'partials/head.php';
-require_once 'partials/alert.php';
-?>
 
 <body class="w-full h-screen relative">
     <div class="hero min-h-screen bg-base-200">

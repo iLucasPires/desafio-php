@@ -1,7 +1,7 @@
 <?php
 
-require_once 'config/Database.php';
-require_once 'controllers/UserController.php';
+include_once 'config/Database.php';
+include_once 'controllers/UserController.php';
 
 session_start();
 
@@ -10,13 +10,6 @@ function getCurrentUri(): string
     $uri = $_SERVER['REQUEST_URI'];
     $uri = strtok($uri, '?');
     return rawurldecode(parse_url($uri, PHP_URL_PATH));
-}
-
-function getParms(): string
-{
-    $uri = $_SERVER['REQUEST_URI'];
-    $uri = strtok($uri, '?');
-    return rawurldecode(parse_url($uri, PHP_URL_QUERY));
 }
 
 function verifyLogin(string $uri): void

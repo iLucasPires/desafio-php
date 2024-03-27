@@ -1,6 +1,4 @@
-<?php
-require_once 'partials/head.php';
-?>
+
 
 <body class="w-full h-screen relative">
     <div class="flex flex-col items-center justify-center h-full">
