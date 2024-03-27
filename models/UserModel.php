@@ -1,17 +1,5 @@
 <?php
 
-class UserCreateDTO
-{
-    public readonly string $email;
-    public readonly string $password;
-
-    public function __construct(string $email, string $password)
-    {
-        $this->email = $email;
-        $this->password = $password;
-    }
-}
-
 class UserDTO
 {
     public readonly int $id;
@@ -32,70 +20,59 @@ class UserModel
 {
     private PDO $db;
 
-    /**
-     * @throws Exception
-     */
-    public function __construct(PDO $db)
-    {
-        $this->db = $db;
-        $this->createUserTable();
-    }
-
-    private function createUserTable(): void
+    private function createTable(): void
     {
         try {
-            $this->db->exec('CREATE TABLE IF NOT EXISTS users (
+            $this->db->exec('
+                CREATE TABLE IF NOT EXISTS users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 email TEXT NOT NULL,
                 hashed_password TEXT NOT NULL,
                 created_at TEXT DEFAULT CURRENT_TIMESTAMP
             )');
+
         } catch (PDOException $e) {
             throw new Exception('Failed to create user table: ' . $e->getMessage());
         }
     }
 
-    public function createUser(UserCreateDTO $user): bool
+    public function __construct(PDO $db)
     {
-        try {
-
-            $stmt = $this->db->prepare('INSERT INTO users (email, hashed_password) VALUES (:email, :hashed_password)');
-            $stmt->execute([
-                ':email' => $user->email,
-                ':hashed_password' => $user->password
-            ]);
-            return true;
-        } catch (PDOException $e) {
-            throw new Exception('Failed to create user: ' . $e->getMessage());
-            return false;
-        }
+        $this->db = $db;
+        $this->createTable();
     }
 
-    /**
-     * @throws Exception
-     */
-    public function getUserByEmail(string $email): ?UserDTO
+    public function create($email, $password)
     {
-        try {
+        $stmt = $this->db->prepare('
+            INSERT INTO users (email, hashed_password)
+            VALUES (:email, :hashed_password)
+        ');
+        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+        $stmt->execute([
+            ":email" => $email,
+            ":hashed_password" => $hashedPassword,
+        ]);
 
-            $stmt = $this->db->prepare('SELECT * FROM users WHERE email = :email');
-            $stmt->execute([':email' => $email]);
-            $userData = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $this->db->lastInsertId();
+    }
 
-            if (!$userData) {
-                return null;
-            }
+    public function findByEmail($email)
+    {
+        $stmt = $this->db->prepare('SELECT * FROM users WHERE email = :email');
+        $stmt->execute([":email" => $email]);
 
-            return new UserDTO(
-                $userData['id'],
-                $userData['email'],
-                $userData['hashed_password'],
-                $userData['created_at']
-            );
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        } catch (PDOException $e) {
-            throw new Exception('Failed to fetch user: ' . $e->getMessage());
-
+        if (!$user) {
+            return null;
         }
+        
+        return [
+            'id' => $user['id'],
+            'email' => $user['email'],
+            'hashed_password' => $user['hashed_password'],
+            'created_at' => $user['created_at'],
+        ];
     }
 }

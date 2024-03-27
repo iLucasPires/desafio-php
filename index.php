@@ -1,53 +1,26 @@
 <?php
 
-include_once 'config/Database.php';
-include_once 'controllers/UserController.php';
+require_once __DIR__ . '/core/Router.php';
+require_once __DIR__ . '/core/Controller.php';
+require_once __DIR__ . '/core/Database.php';
 
-session_start();
+session_start([
+    'cookie_lifetime' => 86400,
+    'cookie_secure' => true,
+    'cookie_samesite' => 'Strict',
+    'cookie_httponly' => true,
+]);
 
-function getCurrentUri(): string
-{
-    $uri = $_SERVER['REQUEST_URI'];
-    $uri = strtok($uri, '?');
-    return rawurldecode(parse_url($uri, PHP_URL_PATH));
-}
+$router = new Router();
 
-function verifyLogin(string $uri): void
-{
-    $session = $_SESSION['user'] ?? null;
+require_once __DIR__ . '/controllers/PageController.php';
+require_once __DIR__ . '/controllers/AuthController.php';
 
-    if ($session && ($uri === '/login' || $uri === '/register')) {
-        header('Location: /');
-        exit();
-    }
+AuthController::isLoggedin($router->uri);
 
-    if (!$session && $uri !== '/login' && $uri !== '/register') {
-        header('Location: /login');
-        exit();
-    }
-}
+$router->get('/', 'PageController@index');
+$router->get('/login', 'PageController@login');
+$router->get('/register', 'PageController@register');
 
-$uri = getCurrentUri();
-verifyLogin($uri);
-
-switch ($uri) {
-    case '/':
-        UserController::index();
-        break;
-    case '/login':
-        UserController::login();
-        break;
-    case '/logout':
-        UserController::logout();
-        break;
-    case '/register':
-        UserController::register();
-        break;
-    case '/character':
-        UserController::character();
-        break;
-    default:
-        http_response_code(404);
-        require_once 'views/error.php';
-        break;
-}
+$router->post('/login', 'AuthController@login');
+$router->post('/register', 'AuthController@register');
