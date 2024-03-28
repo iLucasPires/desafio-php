@@ -2,6 +2,11 @@
 
 class Controller
 {
+    public static function verifyVariavel($variavel): string | bool
+    {
+        return isset($variavel) ? $variavel : false;
+    }
+
     public static function render($view, $data = [])
     {
         $file = __DIR__ . "/../views/$view.php";
@@ -13,7 +18,6 @@ class Controller
         }
     }
 
-  
     public static function fetch($url)
     {
         $ch = curl_init($url);

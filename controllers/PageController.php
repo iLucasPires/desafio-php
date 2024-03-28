@@ -1,4 +1,3 @@
-
 <?php
 
 const BASE_URL = 'https://rickandmortyapi.com/api/character/';
@@ -8,33 +7,34 @@ class PageController
     private function filterParameters($parameters)
     {
         $allowedParameters = [
-            'name' => '', 'status' => '',
-            'species' => '', 'type' => '',
+            'name' => '',
+            'status' => '',
+            'species' => '',
+            'type' => '',
             'gender' => '',
+            'page' => '1',
         ];
-
         return array_intersect_key($parameters, $allowedParameters);
     }
 
     public function index()
     {
-        $parametrs = http_build_query($this->filterParameters($_GET));
-        $response = Controller::fetch(BASE_URL . '?' . $parametrs);
+        $parametrs = $this->filterParameters($_GET);
+        $response = Controller::fetch(BASE_URL . '?' . http_build_query($parametrs));
         $responseData = json_decode($response, true);
 
-        if (!$responseData) {
-            Controller::render('home', [
-                'title' => 'home',
-                'warning' => 'No characters found',
-                'characters' => [],
-            ]);
-            return;
-        }
+        $pages = $responseData['info']['pages'];
+        $start = max(1, ($parametrs['page'] ?? 1) - intval(5 / 2));
+        $end = min($pages, $start + 5 - 1);
 
         Controller::render('home', [
-            'title' => 'home',
-            'warning' => '',
-            'characters' => $responseData['results'],
+            'characters' => $responseData['results'] ?? [],
+            'warning' => $responseData['error'] ?? '',
+            'searchDTO' => (object) $parametrs,
+            'pages' => $responseData['info']['pages'] ?? 0,
+            'page' => $parametrs['page'] ?? 1,
+            'start' => $start ?? 1,
+            'end' => $end ?? 1,
         ]);
     }
 
@@ -50,19 +50,9 @@ class PageController
         $response = Controller::fetch(BASE_URL . $id);
         $responseData = json_decode($response, true);
 
-        if (!$responseData) {
-            Controller::render('character', [
-                'title' => 'character',
-                'warning' => 'Character not found',
-                
-            ]);
-            return;
-        }
-
         Controller::render('character', [
-            'title' => 'character',
-            'warning' => '',
-            
+            'character' => $responseData ?? [],
+            'warning' => $responseData['error'] ?? '',
         ]);
     }
 

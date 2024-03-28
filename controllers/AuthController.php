@@ -46,7 +46,8 @@ class AuthController
 
             Controller::redirect('/');
 
-        } catch (Exception $e) {
+        }
+        catch (Exception $e) {
             Controller::render('form', [
                 'title' => 'login',
                 'warning' => 'failed to login: ' . $e->getMessage(),
@@ -89,7 +90,8 @@ class AuthController
             ];
 
             Controller::redirect('/');
-        } catch (Exception $e) {
+        }
+        catch (Exception $e) {
             Controller::render('form', [
                 'title' => 'register',
                 'warning' => 'failed to create user: ' . $e->getMessage(),
@@ -105,17 +107,29 @@ class AuthController
 
     public static function isLoggedin($uri)
     {
-        $session = $_SESSION['user'] ?? [];
+        $user = $_SESSION['user'] ?? null;
+        $inForm = in_array($uri, ['/login', '/register']);
 
-        if (self::validateToken($session['email'], $session['secret_key'])
-            && ($uri === '/login' || $uri === '/register')) {
-            Controller::redirect('/');
+        if ($user) {
+            $email = $user['email'] ?? null;
+            $secret_key = $user['secret_key'] ?? null;
 
+            $isVerified = self::validateToken($email, $secret_key);
+
+            if ($isVerified && $inForm) {
+                Controller::redirect('/');
+                return;
+            }
+
+            if (!$isVerified && !$inForm) {
+                Controller::redirect('/login');
+                return;
+            }
         }
 
-        if (!self::validateToken($session['email'], $session['secret_key'])
-            && $uri !== '/login' && $uri !== '/register') {
+        if (!$user && !$inForm) {
             Controller::redirect('/login');
+            return;
         }
     }
 }

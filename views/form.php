@@ -11,12 +11,12 @@
         </div>
         <div class="form-control">
           <label class="label"><span class="label-text">Password</span></label>
-          <input title="password" placeholder="password" class="input input-bordered" name="password" required />
+          <input title="password" type="password" placeholder="password" class="input input-bordered" name="password" required />
         </div>
 
         <?php if ($title === 'register'): ?>
           <label class="label"><span class="label-text">Confirm Password</span></label>
-          <input title="confirm" placeholder="confirm password" class="input input-bordered" name="confirm" required />
+          <input title="confirm" type="password" placeholder="confirm password" class="input input-bordered" name="confirm" required />
         <?php endif;?>
 
         <div class="form-control mt-6">

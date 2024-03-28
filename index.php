@@ -20,6 +20,8 @@ AuthController::isLoggedin($router->uri);
 
 $router->get('/', 'PageController@index');
 $router->get('/login', 'PageController@login');
+$router->get('/logout', 'AuthController@logout');
+$router->get('/character', 'PageController@character');
 $router->get('/register', 'PageController@register');
 
 $router->post('/login', 'AuthController@login');
