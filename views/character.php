@@ -15,12 +15,12 @@
             <div class="mt-5">
                 <h2 class="font-bold text-4xl"><?=$character['name']?></h2>
                 <ul class="space-y-1">
-                    <li><span class="font-bold">Status:</span> <?=$character['status']?></li>
-                    <li><span class="font-bold">Species:</span> <?=$character['species']?></li>
-                    <li><span class="font-bold">Type:</span> <?=$character['type']?></li>
-                    <li><span class="font-bold">Gender:</span> <?=$character['gender']?></li>
-                    <li><span class="font-bold">Origin:</span> <?=$character['origin']['name']?></li>
-                    <li><span class="font-bold">Location:</span> <?=$character['location']['name']?></li>
+                    <li><span class="font-bold">Status:</span> <?=$character['status'] ? $character['status'] : 'Unknown'?></li>
+                    <li><span class="font-bold">Species:</span> <?=$character['species'] ? $character['species'] : 'Unknown'?></li>
+                    <li><span class="font-bold">Type:</span> <?=$character['type'] ? $character['type'] : 'Unknown'?></li>
+                    <li><span class="font-bold">Gender:</span> <?=$character['gender'] ? $character['gender'] : 'Unknown'?></li>
+                    <li><span class="font-bold">Origin:</span> <?=$character['origin']['name'] ? $character['origin']['name'] : 'Unknown'?></li>
+                    <li><span class="font-bold">Location:</span> <?=$character['location']['name'] ? $character['location']['name'] : 'Unknown'?></li>
                 </ul>
             </div>
         </div>

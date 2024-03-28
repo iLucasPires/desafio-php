@@ -23,7 +23,7 @@ class PageController
         $response = Controller::fetch(BASE_URL . '?' . http_build_query($parametrs));
         $responseData = json_decode($response, true);
 
-        $pages = $responseData['info']['pages'];
+        $pages = $responseData['info']['pages'] ?? 1;
         $start = max(1, ($parametrs['page'] ?? 1) - intval(5 / 2));
         $end = min($pages, $start + 5 - 1);
 
@@ -31,8 +31,8 @@ class PageController
             'characters' => $responseData['results'] ?? [],
             'warning' => $responseData['error'] ?? '',
             'searchDTO' => (object) $parametrs,
-            'pages' => $responseData['info']['pages'] ?? 0,
             'page' => $parametrs['page'] ?? 1,
+            'pages' => $pages ?? 1,
             'start' => $start ?? 1,
             'end' => $end ?? 1,
         ]);
