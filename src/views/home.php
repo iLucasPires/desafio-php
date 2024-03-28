@@ -26,7 +26,8 @@
             <?php endforeach;?>
         </div>
     </div>
-    <div class="join bg-base-100 <?=$pages > 1 ? 'flex justify-center' : 'hidden'?>">
+    
+    <div class="join bg-base-100 <?=$pages > 1 ? '' : 'hidden'?>">
         <?php if ($page > 1): ?>
             <button 
                 href="#" 
